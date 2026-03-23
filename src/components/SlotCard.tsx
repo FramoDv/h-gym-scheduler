@@ -22,6 +22,9 @@ export function SlotCard({ slot, user, isBooked, bookingId }: SlotCardProps) {
   const available = slot.max_capacity - slot.booking_count
   const isFull = available <= 0
   const isUnderMin = slot.booking_count < slot.min_capacity
+
+  const slotStart = new Date(`${slot.date}T${slot.start_time}`)
+  const isCutoffPassed = slotStart.getTime() - Date.now() < 60 * 60 * 1000
   const createBooking = useCreateBooking()
   const deleteBooking = useDeleteBooking()
 
@@ -105,7 +108,7 @@ export function SlotCard({ slot, user, isBooked, bookingId }: SlotCardProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleCancel}
-                disabled={deleteBooking.isPending}
+                disabled={deleteBooking.isPending || isCutoffPassed}
                 className="text-destructive hover:text-destructive"
               >
                 Cancella
@@ -113,6 +116,8 @@ export function SlotCard({ slot, user, isBooked, bookingId }: SlotCardProps) {
             </>
           ) : isFull ? (
             <Badge variant="secondary">Completo</Badge>
+          ) : isCutoffPassed ? (
+            <Badge variant="secondary">Chiuso</Badge>
           ) : (
             <Button size="sm" onClick={handleBook} disabled={createBooking.isPending}>
               Prenota

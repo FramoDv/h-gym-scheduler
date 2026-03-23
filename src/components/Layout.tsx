@@ -46,7 +46,7 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-2 font-semibold">
               <Dumbbell className="h-5 w-5 text-primary" />
-              <span>GymBooking</span>
+              <span>HumansGym</span>
             </Link>
             <nav className="hidden items-center gap-1 sm:flex">
               {navLinks.map(({ to, label, icon: Icon }) => (
