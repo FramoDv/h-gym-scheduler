@@ -39,7 +39,7 @@ function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }
         {visible.map((b, i) => (
           <div key={i} className="group/tip relative">
             <Avatar size="sm">
-              {b.avatarUrl && <AvatarImage src={b.avatarUrl} alt={b.name} />}
+              {b.avatarUrl && <AvatarImage src={b.avatarUrl} alt={b.name} referrerPolicy="no-referrer" />}
               <AvatarFallback>{getInitials(b.name)}</AvatarFallback>
             </Avatar>
             <div className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity group-hover/tip:opacity-100 z-10 hidden sm:block">

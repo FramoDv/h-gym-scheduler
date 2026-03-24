@@ -73,6 +73,7 @@ export function Layout({ children }: LayoutProps) {
                 <AvatarImage
                   src={user?.user_metadata?.avatar_url as string | undefined}
                   alt={user?.user_metadata?.full_name as string | undefined}
+                  referrerPolicy="no-referrer"
                 />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
