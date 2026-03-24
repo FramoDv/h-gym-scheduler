@@ -169,7 +169,7 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
           <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           <span>
             Minimo {slot.min_capacity} partecipanti richiesti — attualmente {slot.booking_count}.
-            Lo slot verrà annullato se non si raggiunge il minimo entro 1 ora dall'inizio.
+            Lo slot verrà annullato se non si raggiunge il minimo entro 15 minuti dall'inizio.
           </span>
         </div>
       )}
