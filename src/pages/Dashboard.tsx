@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { addDays, format, isWeekend, startOfDay } from 'date-fns'
+import { addDays, format, startOfDay } from 'date-fns'
 import { it } from 'date-fns/locale'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SlotCard } from '@/components/SlotCard'
@@ -12,7 +12,7 @@ function getNextWeekdays(count: number): Date[] {
   const days: Date[] = []
   let current = startOfDay(new Date())
   while (days.length < count) {
-    if (!isWeekend(current)) {
+    if (current.getDay() !== 0) { // exclude Sunday only
       days.push(current)
     }
     current = addDays(current, 1)
@@ -98,7 +98,7 @@ function SlotSection({
 }
 
 export function Dashboard() {
-  const days = getNextWeekdays(10)
+  const days = getNextWeekdays(14)
   const [selectedDate, setSelectedDate] = useState<Date>(days[0])
   const { user } = useAuth()
   const { data: slots, isLoading: slotsLoading } = useSlots(selectedDate)

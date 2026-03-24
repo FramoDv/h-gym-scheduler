@@ -79,8 +79,7 @@ export function getNextWeekdays(count: number): string[] {
 
   while (days.length < count) {
     const dow = d.getDay()
-    if (dow !== 0 && dow !== 6) {
-      // Format using local date components to avoid UTC offset drift
+    if (dow !== 0) { // exclude Sunday only (Saturday included)
       const yyyy = d.getFullYear()
       const mm = String(d.getMonth() + 1).padStart(2, '0')
       const dd = String(d.getDate()).padStart(2, '0')

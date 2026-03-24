@@ -2,6 +2,7 @@ import { Clock, Users, AlertTriangle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import type { SlotWithCount } from '@/hooks/useSlots'
 import { useCreateBooking, useDeleteBooking } from '@/hooks/useBookings'
@@ -17,6 +18,37 @@ interface SlotCardProps {
 
 function formatTime(t: string) {
   return t.slice(0, 5)
+}
+
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase() || '?'
+}
+
+const MAX_VISIBLE = 5
+
+function BookerPile({ bookers }: { bookers: { name: string }[] }) {
+  if (bookers.length === 0) return null
+  const visible = bookers.slice(0, MAX_VISIBLE)
+  const overflow = bookers.length - MAX_VISIBLE
+  return (
+    <AvatarGroup className="mt-3">
+      {visible.map((b, i) => (
+        <div key={i} className="group/tip relative">
+          <Avatar size="sm">
+            <AvatarFallback>{getInitials(b.name)}</AvatarFallback>
+          </Avatar>
+          <div className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity group-hover/tip:opacity-100 z-10">
+            {b.name}
+          </div>
+        </div>
+      ))}
+      {overflow > 0 && (
+        <AvatarGroupCount className="text-xs">+{overflow}</AvatarGroupCount>
+      )}
+    </AvatarGroup>
+  )
 }
 
 export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: SlotCardProps) {
@@ -128,6 +160,8 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
           )}
         </div>
       </div>
+
+      <BookerPile bookers={slot.bookers} />
 
       {/* Badge minimo non raggiunto */}
       {!isFull && isUnderMin && (

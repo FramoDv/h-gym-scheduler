@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { BookingsTable } from '@/components/admin/BookingsTable'
 import { UsageChart } from '@/components/admin/UsageChart'
 import { ExportButton } from '@/components/admin/ExportButton'
+import { AccessControl } from '@/components/admin/AccessControl'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export interface AdminBooking {
@@ -62,7 +63,10 @@ function StatCard({ icon: Icon, label, value }: {
   )
 }
 
+type AdminTab = 'statistiche' | 'accessi'
+
 export function Admin() {
+  const [tab, setTab] = useState<AdminTab>('statistiche')
   const [rangeDays, setRangeDays] = useState(7)
   const today = format(new Date(), 'yyyy-MM-dd')
   const from = format(subDays(new Date(), rangeDays - 1), 'yyyy-MM-dd')
@@ -82,71 +86,81 @@ export function Admin() {
             <ShieldCheck className="h-5 w-5 text-primary" />
             <h1 className="text-2xl font-bold">Area Admin</h1>
           </div>
-          <p className="mt-1 text-muted-foreground">Report prenotazioni palestra</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex rounded-lg border overflow-hidden">
-            {RANGES.map(r => (
-              <button
-                key={r.days}
-                onClick={() => setRangeDays(r.days)}
-                className={`px-3 py-1.5 text-sm transition-colors ${
-                  rangeDays === r.days
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-accent'
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-          {!isLoading && <ExportButton bookings={bookings} />}
+          <p className="mt-1 text-muted-foreground">Gestione palestra</p>
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-3">
-          {[0, 1, 2].map(i => <Skeleton key={i} className="h-24 rounded-lg" />)}
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard
-            icon={Users}
-            label="Totale prenotazioni"
-            value={bookings.length}
-          />
-          <StatCard
-            icon={Users}
-            label="Utenti unici"
-            value={uniqueUsers}
-          />
-          <StatCard
-            icon={TrendingUp}
-            label="Media per slot"
-            value={avgPerSlot}
-          />
-        </div>
+      {/* Tab bar */}
+      <div className="flex rounded-lg border overflow-hidden w-fit">
+        {(['statistiche', 'accessi'] as AdminTab[]).map(t => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-4 py-1.5 text-sm capitalize transition-colors ${
+              tab === t ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'statistiche' && (
+        <>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="flex rounded-lg border overflow-hidden">
+              {RANGES.map(r => (
+                <button
+                  key={r.days}
+                  onClick={() => setRangeDays(r.days)}
+                  className={`px-3 py-1.5 text-sm transition-colors ${
+                    rangeDays === r.days
+                      ? 'bg-primary text-primary-foreground'
+                      : 'hover:bg-accent'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            {!isLoading && <ExportButton bookings={bookings} />}
+          </div>
+
+          {isLoading ? (
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[0, 1, 2].map(i => <Skeleton key={i} className="h-24 rounded-lg" />)}
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-3">
+              <StatCard icon={Users} label="Totale prenotazioni" value={bookings.length} />
+              <StatCard icon={Users} label="Utenti unici" value={uniqueUsers} />
+              <StatCard icon={TrendingUp} label="Media per slot" value={avgPerSlot} />
+            </div>
+          )}
+
+          <div className="rounded-lg border bg-card p-4">
+            <h2 className="mb-4 font-semibold">Utilizzo slot</h2>
+            {isLoading ? <Skeleton className="h-60 w-full" /> : <UsageChart bookings={bookings} />}
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="font-semibold">Prenotazioni</h2>
+            {isLoading ? (
+              <div className="space-y-2">
+                {[0, 1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+              </div>
+            ) : (
+              <BookingsTable bookings={bookings} />
+            )}
+          </div>
+        </>
       )}
 
-      <div className="rounded-lg border bg-card p-4">
-        <h2 className="mb-4 font-semibold">Utilizzo slot</h2>
-        {isLoading ? (
-          <Skeleton className="h-60 w-full" />
-        ) : (
-          <UsageChart bookings={bookings} />
-        )}
-      </div>
-
-      <div className="space-y-3">
-        <h2 className="font-semibold">Prenotazioni</h2>
-        {isLoading ? (
-          <div className="space-y-2">
-            {[0, 1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
-          </div>
-        ) : (
-          <BookingsTable bookings={bookings} />
-        )}
-      </div>
+      {tab === 'accessi' && (
+        <div className="rounded-lg border bg-card p-6">
+          <AccessControl />
+        </div>
+      )}
     </div>
   )
 }

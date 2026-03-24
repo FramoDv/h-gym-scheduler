@@ -12,6 +12,7 @@ export interface SlotWithCount {
   min_capacity: number
   is_cancelled: boolean
   booking_count: number
+  bookers: { name: string }[]
 }
 
 export function useSlots(date: Date) {
@@ -51,19 +52,23 @@ export function useSlots(date: Date) {
       const slotIds = slots.map(s => s.id)
       const { data: bookings, error: bError } = await supabase
         .from('bookings')
-        .select('slot_id')
+        .select('slot_id, user_name')
         .in('slot_id', slotIds)
 
       if (bError) throw bError
 
       const countMap: Record<string, number> = {}
+      const bookersMap: Record<string, { name: string }[]> = {}
       for (const b of bookings ?? []) {
         countMap[b.slot_id] = (countMap[b.slot_id] ?? 0) + 1
+        if (!bookersMap[b.slot_id]) bookersMap[b.slot_id] = []
+        bookersMap[b.slot_id].push({ name: b.user_name ?? '' })
       }
 
       return slots.map(s => ({
         ...s,
         booking_count: countMap[s.id] ?? 0,
+        bookers: bookersMap[s.id] ?? [],
       }))
     },
     staleTime: 0,

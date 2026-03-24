@@ -16,15 +16,15 @@ import { getAccessToken, clearMyBookings, waitForSlotsLoaded, getNextWeekdays } 
 // ── Date selector ─────────────────────────────────────────────────────────────
 
 test.describe('Date selector', () => {
-  test('shows exactly 10 buttons', async ({ page }) => {
+  test('shows exactly 14 buttons', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Prenota uno slot' })).toBeVisible()
 
     const dateButtons = page.locator('button.shrink-0.flex-col.rounded-lg.border')
-    await expect(dateButtons).toHaveCount(10)
+    await expect(dateButtons).toHaveCount(14)
   })
 
-  test('contains no weekend dates (Sat/Sun)', async ({ page }) => {
+  test('contains no Sunday dates', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Prenota uno slot' })).toBeVisible()
 
@@ -34,9 +34,7 @@ test.describe('Date selector', () => {
     for (let i = 0; i < count; i++) {
       // First span = Italian day abbreviation (e.g. "LUN", "MAR", "SAB", "DOM")
       const dayAbbr = await dateButtons.nth(i).locator('span').first().textContent()
-      expect(dayAbbr?.trim().toUpperCase(), `Button ${i} is a weekend`).not.toMatch(
-        /^(SAB|DOM)$/
-      )
+      expect(dayAbbr?.trim().toUpperCase(), `Button ${i} is a Sunday`).not.toMatch(/^DOM$/)
     }
   })
 
