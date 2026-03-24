@@ -21,9 +21,13 @@ export function useMyBookings() {
     queryKey: ['myBookings'],
     queryFn: async (): Promise<Booking[]> => {
       const today = format(new Date(), 'yyyy-MM-dd')
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return []
+
       const { data, error } = await supabase
         .from('bookings')
         .select('*, slots(date, start_time, end_time)')
+        .eq('user_id', user.id)
         .gte('slots.date', today)
 
       if (error) throw error
@@ -42,9 +46,13 @@ export function useUserBookingForDate(date: Date) {
   return useQuery({
     queryKey: ['userBookingsForDate', dateStr],
     queryFn: async (): Promise<string[]> => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return []
+
       const { data, error } = await supabase
         .from('bookings')
         .select('slot_id, slots!inner(date)')
+        .eq('user_id', user.id)
         .eq('slots.date', dateStr)
 
       if (error) throw error
