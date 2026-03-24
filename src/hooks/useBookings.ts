@@ -71,12 +71,14 @@ export function useCreateBooking() {
       userId: string
       userEmail: string
       userName: string
+      userAvatarUrl?: string
     }) => {
       const { error } = await supabase.from('bookings').insert({
         slot_id: params.slotId,
         user_id: params.userId,
         user_email: params.userEmail,
         user_name: params.userName,
+        user_avatar_url: params.userAvatarUrl ?? null,
       })
       if (error) throw error
     },

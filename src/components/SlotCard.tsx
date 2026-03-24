@@ -2,7 +2,7 @@ import { Clock, Users, AlertTriangle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import type { SlotWithCount } from '@/hooks/useSlots'
 import { useCreateBooking, useDeleteBooking } from '@/hooks/useBookings'
@@ -28,26 +28,35 @@ function getInitials(name: string) {
 
 const MAX_VISIBLE = 5
 
-function BookerPile({ bookers }: { bookers: { name: string }[] }) {
+function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }[] }) {
   if (bookers.length === 0) return null
   const visible = bookers.slice(0, MAX_VISIBLE)
   const overflow = bookers.length - MAX_VISIBLE
+  const names = bookers.map(b => b.name.trim()).filter(Boolean)
   return (
-    <AvatarGroup className="mt-3">
-      {visible.map((b, i) => (
-        <div key={i} className="group/tip relative">
-          <Avatar size="sm">
-            <AvatarFallback>{getInitials(b.name)}</AvatarFallback>
-          </Avatar>
-          <div className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity group-hover/tip:opacity-100 z-10">
-            {b.name}
+    <div className="mt-3 space-y-1.5">
+      <AvatarGroup>
+        {visible.map((b, i) => (
+          <div key={i} className="group/tip relative">
+            <Avatar size="sm">
+              {b.avatarUrl && <AvatarImage src={b.avatarUrl} alt={b.name} />}
+              <AvatarFallback>{getInitials(b.name)}</AvatarFallback>
+            </Avatar>
+            {/* Tooltip — desktop hover only */}
+            <div className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity group-hover/tip:opacity-100 z-10 hidden sm:block">
+              {b.name}
+            </div>
           </div>
-        </div>
-      ))}
-      {overflow > 0 && (
-        <AvatarGroupCount className="text-xs">+{overflow}</AvatarGroupCount>
-      )}
-    </AvatarGroup>
+        ))}
+        {overflow > 0 && (
+          <AvatarGroupCount className="text-xs">+{overflow}</AvatarGroupCount>
+        )}
+      </AvatarGroup>
+      {/* Names always visible on mobile */}
+      <p className="text-xs text-muted-foreground sm:hidden">
+        {names.slice(0, MAX_VISIBLE).join(', ')}{overflow > 0 ? ` +${overflow}` : ''}
+      </p>
+    </div>
   )
 }
 
@@ -68,6 +77,7 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
         userId: user.id,
         userEmail: user.email ?? '',
         userName: (user.user_metadata?.full_name as string | undefined) ?? user.email ?? '',
+        userAvatarUrl: (user.user_metadata?.avatar_url as string | undefined) ?? undefined,
       })
       toast.success('Prenotazione confermata!')
     } catch {

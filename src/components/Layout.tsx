@@ -108,7 +108,7 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
+      <main className="mx-auto max-w-5xl px-4 pt-8 pb-24 sm:pb-12">
         {children}
       </main>
     </div>
