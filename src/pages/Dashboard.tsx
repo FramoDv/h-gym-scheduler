@@ -4,7 +4,7 @@ import { it } from 'date-fns/locale'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SlotCard } from '@/components/SlotCard'
 import { useSlots } from '@/hooks/useSlots'
-import { useUserBookingForDate, useMyBookings } from '@/hooks/useBookings'
+import { useMyBookings } from '@/hooks/useBookings'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
@@ -99,11 +99,15 @@ export function Dashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(days[0])
   const { user } = useAuth()
   const { data: slots, isLoading: slotsLoading } = useSlots(selectedDate)
-  const { data: bookedSlotIds = [] } = useUserBookingForDate(selectedDate)
   const { data: myBookings = [] } = useMyBookings()
 
+  const dateStr = format(selectedDate, 'yyyy-MM-dd')
   const bookingIdMap: Record<string, string> = {}
+  const bookedSlotIds: string[] = []
   for (const b of myBookings) {
+    if (b.slots?.date === dateStr) {
+      bookedSlotIds.push(b.slot_id)
+    }
     bookingIdMap[b.slot_id] = b.id
   }
 

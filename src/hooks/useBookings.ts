@@ -28,10 +28,9 @@ export function useMyBookings() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      // Filter out bookings where slot date is past (join might return nulls)
       return (data ?? []).filter(b => b.slots !== null) as Booking[]
     },
-    staleTime: 30 * 1000,
+    staleTime: 0,
   })
 }
 
