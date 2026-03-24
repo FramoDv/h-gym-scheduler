@@ -28,14 +28,18 @@ function getInitials(name: string) {
 
 const MAX_VISIBLE = 5
 
+function firstName(fullName: string) {
+  return fullName.trim().split(/\s+/)[0] ?? fullName.trim()
+}
+
 function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }[] }) {
   if (bookers.length === 0) return null
   const visible = bookers.slice(0, MAX_VISIBLE)
   const overflow = bookers.length - MAX_VISIBLE
-  const names = bookers.map(b => b.name.trim()).filter(Boolean)
+  const firstNames = bookers.map(b => firstName(b.name)).filter(Boolean)
   return (
-    <div className="mt-3 flex items-center gap-2.5">
-      <AvatarGroup>
+    <div className="mt-3 flex items-center gap-2.5 min-w-0">
+      <AvatarGroup className="shrink-0">
         {visible.map((b, i) => (
           <div key={i} className="group/tip relative">
             <Avatar size="sm">
@@ -51,8 +55,8 @@ function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }
           <AvatarGroupCount className="text-xs">+{overflow}</AvatarGroupCount>
         )}
       </AvatarGroup>
-      <p className="text-xs text-muted-foreground leading-snug">
-        {names.slice(0, MAX_VISIBLE).join(', ')}{overflow > 0 ? ` +${overflow}` : ''}
+      <p className="truncate text-xs text-muted-foreground">
+        {firstNames.slice(0, MAX_VISIBLE).join(', ')}{overflow > 0 ? ` +${overflow}` : ''}
       </p>
     </div>
   )
