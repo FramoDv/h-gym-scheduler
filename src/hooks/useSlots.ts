@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { format } from 'date-fns'
 
@@ -15,6 +16,25 @@ export interface SlotWithCount {
 
 export function useSlots(date: Date) {
   const dateStr = format(date, 'yyyy-MM-dd')
+  const queryClient = useQueryClient()
+
+  // Supabase Realtime: invalidate cache when any booking changes for this date
+  useEffect(() => {
+    const channel = supabase
+      .channel(`bookings:${dateStr}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'bookings' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['slots', dateStr] })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [dateStr, queryClient])
 
   return useQuery({
     queryKey: ['slots', dateStr],
@@ -28,7 +48,6 @@ export function useSlots(date: Date) {
       if (error) throw error
       if (!slots) return []
 
-      // Fetch booking counts for each slot
       const slotIds = slots.map(s => s.id)
       const { data: bookings, error: bError } = await supabase
         .from('bookings')
