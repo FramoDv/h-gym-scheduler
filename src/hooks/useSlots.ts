@@ -66,6 +66,7 @@ export function useSlots(date: Date) {
         booking_count: countMap[s.id] ?? 0,
       }))
     },
-    staleTime: 30 * 1000,
+    staleTime: 0,
+    refetchInterval: 10 * 1000,
   })
 }
