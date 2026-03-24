@@ -12,13 +12,14 @@ interface SlotCardProps {
   user: User
   isBooked: boolean
   bookingId?: string
+  hasBookingForDay?: boolean
 }
 
 function formatTime(t: string) {
   return t.slice(0, 5)
 }
 
-export function SlotCard({ slot, user, isBooked, bookingId }: SlotCardProps) {
+export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: SlotCardProps) {
   const available = slot.max_capacity - slot.booking_count
   const isFull = available <= 0
   const isUnderMin = slot.booking_count < slot.min_capacity
@@ -118,6 +119,8 @@ export function SlotCard({ slot, user, isBooked, bookingId }: SlotCardProps) {
             <Badge variant="secondary">Completo</Badge>
           ) : isCutoffPassed ? (
             <Badge variant="secondary">Chiuso</Badge>
+          ) : hasBookingForDay ? (
+            <Badge variant="secondary">Hai già uno slot oggi</Badge>
           ) : (
             <Button size="sm" onClick={handleBook} disabled={createBooking.isPending}>
               Prenota

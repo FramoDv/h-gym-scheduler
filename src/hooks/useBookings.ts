@@ -25,10 +25,13 @@ export function useMyBookings() {
         .from('bookings')
         .select('*, slots(date, start_time, end_time)')
         .gte('slots.date', today)
-        .order('created_at', { ascending: false })
 
       if (error) throw error
-      return (data ?? []).filter(b => b.slots !== null) as Booking[]
+      return ((data ?? []).filter(b => b.slots !== null) as Booking[]).sort((a, b) => {
+        const da = `${a.slots!.date}T${a.slots!.start_time}`
+        const db = `${b.slots!.date}T${b.slots!.start_time}`
+        return da < db ? -1 : 1
+      })
     },
     staleTime: 0,
   })

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(vercel --prod --yes)",
+      "Bash(git -C /Users/francescomonti/Projects/h-gym-scheduler/h-gym-scheduler add src/pages/Dashboard.tsx src/hooks/useBookings.ts)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

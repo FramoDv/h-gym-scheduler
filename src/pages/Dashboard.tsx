@@ -66,12 +66,14 @@ function SlotSection({
   user,
   bookedSlotIds,
   bookingIdMap,
+  hasBookingForDay,
 }: {
   title: string
   slots: ReturnType<typeof useSlots>['data']
   user: NonNullable<ReturnType<typeof useAuth>['user']>
   bookedSlotIds: string[]
   bookingIdMap: Record<string, string>
+  hasBookingForDay: boolean
 }) {
   if (!slots || slots.length === 0) return null
   return (
@@ -87,6 +89,7 @@ function SlotSection({
             user={user}
             isBooked={bookedSlotIds.includes(slot.id)}
             bookingId={bookingIdMap[slot.id]}
+            hasBookingForDay={hasBookingForDay && !bookedSlotIds.includes(slot.id)}
           />
         ))}
       </div>
@@ -95,7 +98,7 @@ function SlotSection({
 }
 
 export function Dashboard() {
-  const days = getNextWeekdays(7)
+  const days = getNextWeekdays(14)
   const [selectedDate, setSelectedDate] = useState<Date>(days[0])
   const { user } = useAuth()
   const { data: slots, isLoading: slotsLoading } = useSlots(selectedDate)
@@ -110,6 +113,7 @@ export function Dashboard() {
     }
     bookingIdMap[b.slot_id] = b.id
   }
+  const hasBookingForDay = bookedSlotIds.length > 0
 
   const morningSlots = slots?.filter(s => {
     const hour = parseInt(s.start_time.split(':')[0])
@@ -156,6 +160,7 @@ export function Dashboard() {
             user={user!}
             bookedSlotIds={bookedSlotIds}
             bookingIdMap={bookingIdMap}
+            hasBookingForDay={hasBookingForDay}
           />
           <SlotSection
             title="Sera"
@@ -163,6 +168,7 @@ export function Dashboard() {
             user={user!}
             bookedSlotIds={bookedSlotIds}
             bookingIdMap={bookingIdMap}
+            hasBookingForDay={hasBookingForDay}
           />
         </div>
       )}
