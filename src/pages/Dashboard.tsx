@@ -98,7 +98,7 @@ function SlotSection({
 }
 
 export function Dashboard() {
-  const days = getNextWeekdays(14)
+  const days = getNextWeekdays(10)
   const [selectedDate, setSelectedDate] = useState<Date>(days[0])
   const { user } = useAuth()
   const { data: slots, isLoading: slotsLoading } = useSlots(selectedDate)
