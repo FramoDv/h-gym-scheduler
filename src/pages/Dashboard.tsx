@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
+import { Sun, Moon } from 'lucide-react'
 import { addDays, format, startOfDay } from 'date-fns'
 import { it } from 'date-fns/locale'
 import { useQuery } from '@tanstack/react-query'
@@ -117,9 +118,9 @@ function DateSelector({
   )
 }
 
-const SECTION_ICONS: Record<string, string> = {
-  Mattina: '☀️',
-  Sera: '🌙',
+const SECTION_ICONS: Record<string, ReactNode> = {
+  Mattina: <Sun className="h-3.5 w-3.5" />,
+  Sera: <Moon className="h-3.5 w-3.5" />,
 }
 
 function SlotSection({
@@ -141,7 +142,7 @@ function SlotSection({
   return (
     <div className="space-y-3">
       <h3 className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-        {SECTION_ICONS[title] && <span>{SECTION_ICONS[title]}</span>}
+        {SECTION_ICONS[title]}
         {title}
       </h3>
       <div className="space-y-2">
