@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import type { SlotWithCount } from '@/hooks/useSlots'
-import { useCreateBooking, useDeleteBooking } from '@/hooks/useBookings'
+import { useDeleteBooking } from '@/hooks/useBookings'
 import type { User } from '@supabase/supabase-js'
 
 interface SlotCardProps {
@@ -14,6 +14,8 @@ interface SlotCardProps {
   isBooked: boolean
   bookingId?: string
   hasBookingForDay?: boolean
+  onBook: (slotId: string) => Promise<void>
+  isAnyBookingPending: boolean
 }
 
 function formatTime(t: string) {
@@ -62,25 +64,18 @@ function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }
   )
 }
 
-export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: SlotCardProps) {
+export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay, onBook, isAnyBookingPending }: SlotCardProps) {
   const available = slot.max_capacity - slot.booking_count
   const isFull = available <= 0
   const isUnderMin = slot.booking_count < slot.min_capacity
 
   const slotStart = new Date(`${slot.date}T${slot.start_time}`)
   const isCutoffPassed = slotStart.getTime() - Date.now() < 15 * 60 * 1000
-  const createBooking = useCreateBooking()
   const deleteBooking = useDeleteBooking()
 
   const handleBook = async () => {
     try {
-      await createBooking.mutateAsync({
-        slotId: slot.id,
-        userId: user.id,
-        userEmail: user.email ?? '',
-        userName: (user.user_metadata?.full_name as string | undefined) ?? user.email ?? '',
-        userAvatarUrl: (user.user_metadata?.avatar_url as string | undefined) ?? undefined,
-      })
+      await onBook(slot.id)
       toast.success('Prenotazione confermata!')
     } catch {
       toast.error('Errore durante la prenotazione. Riprova.')
@@ -144,7 +139,7 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
           ) : hasBookingForDay ? (
             <Badge variant="secondary" className="text-[11px]">Hai già uno slot</Badge>
           ) : (
-            <Button size="sm" onClick={handleBook} disabled={createBooking.isPending}>
+            <Button size="sm" onClick={handleBook} disabled={isAnyBookingPending}>
               Prenota
             </Button>
           )}

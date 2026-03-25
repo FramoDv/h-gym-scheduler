@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SlotCard } from '@/components/SlotCard'
 import { useSlots } from '@/hooks/useSlots'
-import { useMyBookings } from '@/hooks/useBookings'
+import { useMyBookings, useCreateBooking } from '@/hooks/useBookings'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
@@ -130,6 +130,8 @@ function SlotSection({
   bookedSlotIds,
   bookingIdMap,
   hasBookingForDay,
+  onBook,
+  isAnyBookingPending,
 }: {
   title: string
   slots: ReturnType<typeof useSlots>['data']
@@ -137,6 +139,8 @@ function SlotSection({
   bookedSlotIds: string[]
   bookingIdMap: Record<string, string>
   hasBookingForDay: boolean
+  onBook: (slotId: string) => Promise<void>
+  isAnyBookingPending: boolean
 }) {
   if (!slots || slots.length === 0) return null
   return (
@@ -154,6 +158,8 @@ function SlotSection({
             isBooked={bookedSlotIds.includes(slot.id)}
             bookingId={bookingIdMap[slot.id]}
             hasBookingForDay={hasBookingForDay && !bookedSlotIds.includes(slot.id)}
+            onBook={onBook}
+            isAnyBookingPending={isAnyBookingPending}
           />
         ))}
       </div>
@@ -168,6 +174,7 @@ export function Dashboard() {
   const { data: slots, isLoading: slotsLoading } = useSlots(selectedDate)
   const { data: myBookings = [] } = useMyBookings()
   const { data: spaces = [] } = useActiveSpaces()
+  const createBooking = useCreateBooking()
   const spaceTitle = spaces.length === 1
     ? `Prenota una sessione in ${spaces[0].name}`
     : 'Prenota una sessione'
@@ -182,6 +189,16 @@ export function Dashboard() {
     bookingIdMap[b.slot_id] = b.id
   }
   const hasBookingForDay = bookedSlotIds.length > 0
+
+  const handleBook = async (slotId: string) => {
+    await createBooking.mutateAsync({
+      slotId,
+      userId: user!.id,
+      userEmail: user!.email ?? '',
+      userName: (user!.user_metadata?.full_name as string | undefined) ?? user!.email ?? '',
+      userAvatarUrl: (user!.user_metadata?.avatar_url as string | undefined) ?? undefined,
+    })
+  }
 
   const morningSlots = slots?.filter(s => {
     const hour = parseInt(s.start_time.split(':')[0])
@@ -229,6 +246,8 @@ export function Dashboard() {
             bookedSlotIds={bookedSlotIds}
             bookingIdMap={bookingIdMap}
             hasBookingForDay={hasBookingForDay}
+            onBook={handleBook}
+            isAnyBookingPending={createBooking.isPending}
           />
           <SlotSection
             title="Sera"
@@ -237,6 +256,8 @@ export function Dashboard() {
             bookedSlotIds={bookedSlotIds}
             bookingIdMap={bookingIdMap}
             hasBookingForDay={hasBookingForDay}
+            onBook={handleBook}
+            isAnyBookingPending={createBooking.isPending}
           />
         </div>
       )}
