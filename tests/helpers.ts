@@ -71,19 +71,48 @@ export async function waitForSlotsLoaded(page: Page) {
 }
 
 /** Returns the next N weekday dates as YYYY-MM-DD strings (local timezone). */
+function easterDate(year: number): Date {
+  const a = year % 19, b = Math.floor(year / 100), c = year % 100
+  const d2 = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25)
+  const g = Math.floor((b - f + 1) / 3)
+  const h = (19 * a + b - d2 - g + 15) % 30
+  const i = Math.floor(c / 4), k = c % 4
+  const l = (32 + 2 * e + 2 * i - h - k) % 7
+  const m = Math.floor((a + 11 * h + 22 * l) / 451)
+  const month = Math.floor((h + l - 7 * m + 114) / 31) - 1
+  const day = ((h + l - 7 * m + 114) % 31) + 1
+  return new Date(year, month, day)
+}
+
+function localDateStr(d: Date): string {
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
+function italianHolidays(year: number): Set<string> {
+  const easter = easterDate(year)
+  const easterMonday = new Date(easter)
+  easterMonday.setDate(easter.getDate() + 1)
+  return new Set([
+    `${year}-01-01`, `${year}-01-06`,
+    localDateStr(easter), localDateStr(easterMonday),
+    `${year}-04-25`, `${year}-05-01`, `${year}-06-02`,
+    `${year}-08-15`, `${year}-11-01`, `${year}-12-08`,
+    `${year}-12-25`, `${year}-12-26`,
+  ])
+}
+
 export function getNextWeekdays(count: number): string[] {
   const days: string[] = []
   const d = new Date()
-  // Work with local midnight
   d.setHours(0, 0, 0, 0)
-
+  const holidays = new Set([...italianHolidays(d.getFullYear()), ...italianHolidays(d.getFullYear() + 1)])
   while (days.length < count) {
-    const dow = d.getDay()
-    if (dow !== 0) { // exclude Sunday only (Saturday included)
-      const yyyy = d.getFullYear()
-      const mm = String(d.getMonth() + 1).padStart(2, '0')
-      const dd = String(d.getDate()).padStart(2, '0')
-      days.push(`${yyyy}-${mm}-${dd}`)
+    const dateStr = localDateStr(d)
+    if (d.getDay() !== 0 && !holidays.has(dateStr)) {
+      days.push(dateStr)
     }
     d.setDate(d.getDate() + 1)
   }
