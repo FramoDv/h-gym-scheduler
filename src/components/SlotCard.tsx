@@ -1,4 +1,4 @@
-import { Users, AlertTriangle, XCircle } from 'lucide-react'
+import { Users, AlertTriangle, XCircle, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -97,20 +97,21 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
     }
   }
 
-  if (slot.is_cancelled) {
+  // "Chiuso" → grafica prominente tratteggiata
+  if (isCutoffPassed && !isBooked) {
     return (
       <div className="rounded-lg border border-dashed bg-muted/40 p-4 opacity-60">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="font-semibold text-muted-foreground">
+            <p className="text-xl font-bold tracking-tight leading-none text-muted-foreground">
               {formatTime(slot.start_time)} – {formatTime(slot.end_time)}
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground flex items-center gap-1">
-              <XCircle className="h-3 w-3 shrink-0" />
-              Slot annullato — minimo {slot.min_capacity} partecipanti non raggiunto
+            <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1">
+              <Lock className="h-3 w-3 shrink-0" />
+              Prenotazioni chiuse per questo slot
             </p>
           </div>
-          <Badge variant="secondary" className="shrink-0">Annullato</Badge>
+          <Badge variant="secondary" className="shrink-0">Chiuso</Badge>
         </div>
       </div>
     )
@@ -134,10 +135,12 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
             <Badge variant="default" className="bg-primary/20 text-primary hover:bg-primary/20 shrink-0">
               Prenotato
             </Badge>
+          ) : slot.is_cancelled ? (
+            <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
+              <XCircle className="h-3 w-3" />Annullato
+            </Badge>
           ) : isFull ? (
             <Badge variant="secondary">Completo</Badge>
-          ) : isCutoffPassed ? (
-            <Badge variant="secondary">Chiuso</Badge>
           ) : hasBookingForDay ? (
             <Badge variant="secondary" className="text-[11px]">Già prenotato oggi</Badge>
           ) : (
