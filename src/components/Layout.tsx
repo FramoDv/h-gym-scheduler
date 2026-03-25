@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Dumbbell, Calendar, LayoutDashboard, ShieldCheck, LogOut } from 'lucide-react'
+import { Calendar, LayoutDashboard, ShieldCheck, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -45,8 +45,10 @@ export function Layout({ children }: LayoutProps) {
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-2 font-semibold">
-              <Dumbbell className="h-5 w-5 text-primary" />
-              <span>HumansGym</span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-black">
+                S
+              </div>
+              <span>Slokta</span>
             </Link>
             <nav className="hidden items-center gap-1 sm:flex">
               {navLinks.map(({ to, label, icon: Icon }) => (

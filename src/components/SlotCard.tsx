@@ -142,7 +142,7 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
           ) : isFull ? (
             <Badge variant="secondary">Completo</Badge>
           ) : hasBookingForDay ? (
-            <Badge variant="secondary" className="text-[11px]">Già prenotato oggi</Badge>
+            <Badge variant="secondary" className="text-[11px]">Hai già uno slot</Badge>
           ) : (
             <Button size="sm" onClick={handleBook} disabled={createBooking.isPending}>
               Prenota
@@ -153,6 +153,7 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
 
       {/* Row 2: meta */}
       <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
+        {slot.space_name && <span>{slot.space_name}</span>}
         <span>+15 min uscita</span>
         <span className="flex items-center gap-1">
           <Users className="h-3 w-3" />

@@ -50,7 +50,20 @@
       "WebFetch(domain:euipo.europa.eu)",
       "WebFetch(domain:www.businesswire.com)",
       "WebFetch(domain:zyftra.com)",
-      "WebFetch(domain:ie.linkedin.com)"
+      "WebFetch(domain:ie.linkedin.com)",
+      "WebFetch(domain:slotka.com)",
+      "WebFetch(domain:slotka.ai)",
+      "WebFetch(domain:slotka.io)",
+      "WebFetch(domain:slotka.app)",
+      "WebFetch(domain:www.proz.com)",
+      "WebFetch(domain:www.nameslook.com)",
+      "WebFetch(domain:forebears.io)",
+      "WebFetch(domain:context.reverso.net)",
+      "WebFetch(domain:instantdomainsearch.com)",
+      "WebFetch(domain:sjp.pwn.pl)",
+      "WebFetch(domain:www.namecheap.com)",
+      "WebFetch(domain:sedo.com)",
+      "WebFetch(domain:pl.wiktionary.org)"
     ]
   }
 }

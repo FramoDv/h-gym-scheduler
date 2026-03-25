@@ -1,12 +1,29 @@
 import { useState } from 'react'
 import { addDays, format, startOfDay } from 'date-fns'
 import { it } from 'date-fns/locale'
+import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SlotCard } from '@/components/SlotCard'
 import { useSlots } from '@/hooks/useSlots'
 import { useMyBookings } from '@/hooks/useBookings'
 import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+
+function useActiveSpaces() {
+  return useQuery({
+    queryKey: ['spaces', 'active'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('spaces')
+        .select('name')
+        .eq('is_active', true)
+        .order('created_at')
+      return data ?? []
+    },
+    staleTime: 60 * 1000,
+  })
+}
 
 function easterDate(year: number): Date {
   const a = year % 19
@@ -100,6 +117,11 @@ function DateSelector({
   )
 }
 
+const SECTION_ICONS: Record<string, string> = {
+  Mattina: '☀️',
+  Sera: '🌙',
+}
+
 function SlotSection({
   title,
   slots,
@@ -118,7 +140,8 @@ function SlotSection({
   if (!slots || slots.length === 0) return null
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3 className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        {SECTION_ICONS[title] && <span>{SECTION_ICONS[title]}</span>}
         {title}
       </h3>
       <div className="space-y-2">
@@ -143,6 +166,10 @@ export function Dashboard() {
   const { user } = useAuth()
   const { data: slots, isLoading: slotsLoading } = useSlots(selectedDate)
   const { data: myBookings = [] } = useMyBookings()
+  const { data: spaces = [] } = useActiveSpaces()
+  const spaceTitle = spaces.length === 1
+    ? `Prenota una sessione in ${spaces[0].name}`
+    : 'Prenota una sessione'
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd')
   const bookingIdMap: Record<string, string> = {}
@@ -167,9 +194,9 @@ export function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Prenota uno slot</h1>
+        <h1 className="text-2xl font-bold">{spaceTitle}</h1>
         <p className="mt-1 text-muted-foreground">
-          Scegli il giorno e l'orario che preferisci
+          Scegli lo slot che preferisci
         </p>
       </div>
 

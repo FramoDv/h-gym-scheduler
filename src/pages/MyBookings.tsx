@@ -68,11 +68,16 @@ export function MyBookings() {
                         ? format(date, 'EEEE d MMMM', { locale: it })
                         : 'Data sconosciuta'}
                     </p>
-                    <div className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock className="h-3.5 w-3.5" />
-                      {booking.slots
-                        ? `${booking.slots.start_time.slice(0, 5)} – ${booking.slots.end_time.slice(0, 5)}`
-                        : '—'}
+                    <div className="mt-0.5 flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" />
+                        {booking.slots
+                          ? `${booking.slots.start_time.slice(0, 5)} – ${booking.slots.end_time.slice(0, 5)}`
+                          : '—'}
+                      </span>
+                      {booking.slots?.spaces?.name && (
+                        <span className="text-xs">· {booking.slots.spaces.name}</span>
+                      )}
                     </div>
                   </div>
                 </div>

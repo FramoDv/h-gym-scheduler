@@ -13,6 +13,7 @@ export interface SlotWithCount {
   is_cancelled: boolean
   booking_count: number
   bookers: { name: string; avatarUrl?: string }[]
+  space_name?: string
 }
 
 export function useSlots(date: Date) {
@@ -42,7 +43,7 @@ export function useSlots(date: Date) {
     queryFn: async (): Promise<SlotWithCount[]> => {
       const { data: slots, error } = await supabase
         .from('slots')
-        .select('id, date, start_time, end_time, max_capacity, min_capacity, is_cancelled')
+        .select('id, date, start_time, end_time, max_capacity, min_capacity, is_cancelled, spaces(name)')
         .eq('date', dateStr)
         .order('start_time')
 
@@ -65,11 +66,15 @@ export function useSlots(date: Date) {
         bookersMap[b.slot_id].push({ name: b.user_name ?? '', avatarUrl: b.user_avatar_url ?? undefined })
       }
 
-      return slots.map(s => ({
-        ...s,
-        booking_count: countMap[s.id] ?? 0,
-        bookers: bookersMap[s.id] ?? [],
-      }))
+      return slots.map(s => {
+        const { spaces, ...rest } = s as typeof s & { spaces: { name: string } | null }
+        return {
+          ...rest,
+          booking_count: countMap[s.id] ?? 0,
+          bookers: bookersMap[s.id] ?? [],
+          space_name: spaces?.name,
+        }
+      })
     },
     staleTime: 0,
     refetchInterval: 10 * 1000,

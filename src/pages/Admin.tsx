@@ -7,6 +7,7 @@ import { BookingsTable } from '@/components/admin/BookingsTable'
 import { UsageChart } from '@/components/admin/UsageChart'
 import { ExportButton } from '@/components/admin/ExportButton'
 import { AccessControl } from '@/components/admin/AccessControl'
+import { Spaces } from '@/components/admin/Spaces'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export interface AdminBooking {
@@ -20,6 +21,7 @@ export interface AdminBooking {
     date: string
     start_time: string
     end_time: string
+    spaces: { name: string } | null
   } | null
 }
 
@@ -29,7 +31,7 @@ function useAdminBookings(from: string, to: string) {
     queryFn: async (): Promise<AdminBooking[]> => {
       const { data, error } = await supabase
         .from('bookings')
-        .select('*, slots!inner(date, start_time, end_time)')
+        .select('*, slots!inner(date, start_time, end_time, spaces(name))')
         .gte('slots.date', from)
         .lte('slots.date', to)
         .order('created_at', { ascending: false })
@@ -63,7 +65,7 @@ function StatCard({ icon: Icon, label, value }: {
   )
 }
 
-type AdminTab = 'statistiche' | 'accessi'
+type AdminTab = 'statistiche' | 'spazi' | 'accessi'
 
 export function Admin() {
   const [tab, setTab] = useState<AdminTab>('statistiche')
@@ -86,13 +88,13 @@ export function Admin() {
             <ShieldCheck className="h-5 w-5 text-primary" />
             <h1 className="text-2xl font-bold">Area Admin</h1>
           </div>
-          <p className="mt-1 text-muted-foreground">Gestione palestra</p>
+          <p className="mt-1 text-muted-foreground">Gestione spazi aziendali</p>
         </div>
       </div>
 
       {/* Tab bar */}
       <div className="flex rounded-lg border overflow-hidden w-fit">
-        {(['statistiche', 'accessi'] as AdminTab[]).map(t => (
+        {(['statistiche', 'spazi', 'accessi'] as AdminTab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -154,6 +156,12 @@ export function Admin() {
             )}
           </div>
         </>
+      )}
+
+      {tab === 'spazi' && (
+        <div className="rounded-lg border bg-card p-6">
+          <Spaces />
+        </div>
       )}
 
       {tab === 'accessi' && (

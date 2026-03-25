@@ -13,6 +13,7 @@ export interface Booking {
     date: string
     start_time: string
     end_time: string
+    spaces: { name: string } | null
   } | null
 }
 
@@ -26,7 +27,7 @@ export function useMyBookings() {
 
       const { data, error } = await supabase
         .from('bookings')
-        .select('*, slots(date, start_time, end_time)')
+        .select('*, slots(date, start_time, end_time, spaces(name))')
         .eq('user_id', user.id)
         .gte('slots.date', today)
 

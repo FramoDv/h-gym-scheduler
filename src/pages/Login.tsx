@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Dumbbell, AlertCircle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -33,12 +33,12 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-            <Dumbbell className="h-8 w-8 text-primary" />
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-3xl font-black">
+            S
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">HumansGym</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Slokta</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Prenota il tuo slot in palestra
+            Prenota spazi aziendali
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export function Login() {
           <div>
             <h2 className="text-lg font-semibold">Accesso riservato</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Riservato agli utenti autorizzati da humans.tech.
+              Accesso riservato agli utenti autorizzati.
               <br />
               Usa il tuo account Google per accedere.
             </p>
@@ -60,13 +60,14 @@ export function Login() {
           )}
 
           <Button
+            variant="outline"
             onClick={handleGoogleSignIn}
             disabled={signing}
             className="w-full gap-2"
             size="lg"
           >
             {signing ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
             ) : (
               <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
