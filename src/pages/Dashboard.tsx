@@ -126,7 +126,6 @@ const SECTION_ICONS: Record<string, ReactNode> = {
 function SlotSection({
   title,
   slots,
-  user,
   bookedSlotIds,
   bookingIdMap,
   hasBookingForDay,
@@ -135,7 +134,6 @@ function SlotSection({
 }: {
   title: string
   slots: ReturnType<typeof useSlots>['data']
-  user: NonNullable<ReturnType<typeof useAuth>['user']>
   bookedSlotIds: string[]
   bookingIdMap: Record<string, string>
   hasBookingForDay: boolean
@@ -154,7 +152,6 @@ function SlotSection({
           <SlotCard
             key={slot.id}
             slot={slot}
-            user={user}
             isBooked={bookedSlotIds.includes(slot.id)}
             bookingId={bookingIdMap[slot.id]}
             hasBookingForDay={hasBookingForDay && !bookedSlotIds.includes(slot.id)}
@@ -242,7 +239,6 @@ export function Dashboard() {
           <SlotSection
             title="Mattina"
             slots={morningSlots}
-            user={user!}
             bookedSlotIds={bookedSlotIds}
             bookingIdMap={bookingIdMap}
             hasBookingForDay={hasBookingForDay}
@@ -252,7 +248,6 @@ export function Dashboard() {
           <SlotSection
             title="Sera"
             slots={eveningSlots}
-            user={user!}
             bookedSlotIds={bookedSlotIds}
             bookingIdMap={bookingIdMap}
             hasBookingForDay={hasBookingForDay}

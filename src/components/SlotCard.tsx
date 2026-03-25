@@ -6,11 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage, AvatarGroup, AvatarGroupCount } fr
 import { cn } from '@/lib/utils'
 import type { SlotWithCount } from '@/hooks/useSlots'
 import { useDeleteBooking } from '@/hooks/useBookings'
-import type { User } from '@supabase/supabase-js'
 
 interface SlotCardProps {
   slot: SlotWithCount
-  user: User
   isBooked: boolean
   bookingId?: string
   hasBookingForDay?: boolean
@@ -64,7 +62,7 @@ function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }
   )
 }
 
-export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay, onBook, isAnyBookingPending }: SlotCardProps) {
+export function SlotCard({ slot, isBooked, bookingId, hasBookingForDay, onBook, isAnyBookingPending }: SlotCardProps) {
   const available = slot.max_capacity - slot.booking_count
   const isFull = available <= 0
   const isUnderMin = slot.booking_count < slot.min_capacity
