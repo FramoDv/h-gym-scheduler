@@ -68,7 +68,7 @@ export function SlotCard({ slot, user, isBooked, bookingId, hasBookingForDay }: 
   const isUnderMin = slot.booking_count < slot.min_capacity
 
   const slotStart = new Date(`${slot.date}T${slot.start_time}`)
-  const isCutoffPassed = slotStart.getTime() - Date.now() < 60 * 60 * 1000
+  const isCutoffPassed = slotStart.getTime() - Date.now() < 15 * 60 * 1000
   const createBooking = useCreateBooking()
   const deleteBooking = useDeleteBooking()
 
