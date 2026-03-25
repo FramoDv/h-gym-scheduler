@@ -42,11 +42,13 @@ export function Login() {
           </p>
         </div>
 
-        <div className="rounded-xl border bg-card p-8 shadow-sm space-y-6">
+        <div className="rounded-xl border bg-card p-8 shadow-sm space-y-6 text-center">
           <div>
-            <h2 className="text-lg font-semibold">Accedi</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Usa il tuo account <strong>@humans.tech</strong>
+            <h2 className="text-lg font-semibold">Accesso riservato</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Riservato agli utenti autorizzati da humans.tech.
+              <br />
+              Usa il tuo account Google per accedere.
             </p>
           </div>
 
@@ -75,10 +77,6 @@ export function Login() {
             )}
             Accedi con Google
           </Button>
-
-          <p className="text-center text-xs text-muted-foreground">
-            Accesso riservato ai dipendenti Humans.tech
-          </p>
         </div>
       </div>
     </div>
