@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { subDays } from 'date-fns'
+import { format, subDays } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { ShieldCheck, Users, TrendingUp } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -10,6 +10,7 @@ import { ExportButton } from '@/components/admin/ExportButton'
 import { AccessControl } from '@/components/admin/AccessControl'
 import { Spaces } from '@/components/admin/Spaces'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 export interface AdminBooking {
   id: string
@@ -65,12 +66,10 @@ function StatCard({ icon: Icon, label, value }: {
   )
 }
 
-type AdminTab = 'statistiche' | 'spazi' | 'accessi'
-
 export function Admin() {
-  const [tab, setTab] = useState<AdminTab>('statistiche')
   const [rangeDays, setRangeDays] = useState(7)
-  const from = subDays(new Date(), rangeDays - 1).toISOString()
+  // Stable date string — no milliseconds, queryKey doesn't change on every render
+  const from = format(subDays(new Date(), rangeDays - 1), 'yyyy-MM-dd')
   const { data: bookings = [], isLoading } = useAdminBookings(from)
 
   const uniqueUsers = new Set(bookings.map(b => b.user_id)).size
@@ -91,23 +90,14 @@ export function Admin() {
         </div>
       </div>
 
-      {/* Tab bar */}
-      <div className="flex rounded-lg border overflow-hidden w-fit">
-        {(['statistiche', 'spazi', 'accessi'] as AdminTab[]).map(t => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-1.5 text-sm capitalize transition-colors ${
-              tab === t ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+      <Tabs defaultValue="statistiche">
+        <TabsList variant="line">
+          <TabsTrigger value="statistiche">Statistiche</TabsTrigger>
+          <TabsTrigger value="spazi">Spazi</TabsTrigger>
+          <TabsTrigger value="accessi">Accessi</TabsTrigger>
+        </TabsList>
 
-      {tab === 'statistiche' && (
-        <>
+        <TabsContent value="statistiche" className="space-y-6 pt-6">
           <div className="flex flex-wrap items-center justify-end gap-2">
             <div className="flex rounded-lg border overflow-hidden">
               {RANGES.map(r => (
@@ -160,20 +150,20 @@ export function Admin() {
               <BookingsTable bookings={bookings} />
             )}
           </div>
-        </>
-      )}
+        </TabsContent>
 
-      {tab === 'spazi' && (
-        <div className="rounded-lg border bg-card p-6">
-          <Spaces />
-        </div>
-      )}
+        <TabsContent value="spazi" className="pt-6">
+          <div className="rounded-lg border bg-card p-6">
+            <Spaces />
+          </div>
+        </TabsContent>
 
-      {tab === 'accessi' && (
-        <div className="rounded-lg border bg-card p-6">
-          <AccessControl />
-        </div>
-      )}
+        <TabsContent value="accessi" className="pt-6">
+          <div className="rounded-lg border bg-card p-6">
+            <AccessControl />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
