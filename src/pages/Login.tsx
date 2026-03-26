@@ -110,7 +110,7 @@ export function Login() {
                 onClick={() => setGuestMode(true)}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                Sei un ospite? Accedi qui
+                Sei un ospite? <span className="font-semibold">Accedi qui</span>
               </button>
             </>
           ) : sent ? (
