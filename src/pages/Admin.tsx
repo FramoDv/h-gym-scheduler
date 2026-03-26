@@ -5,6 +5,7 @@ import { ShieldCheck, Users, TrendingUp } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { BookingsTable } from '@/components/admin/BookingsTable'
 import { UsageChart } from '@/components/admin/UsageChart'
+import { UserChart } from '@/components/admin/UserChart'
 import { ExportButton } from '@/components/admin/ExportButton'
 import { AccessControl } from '@/components/admin/AccessControl'
 import { Spaces } from '@/components/admin/Spaces'
@@ -140,9 +141,15 @@ export function Admin() {
             </div>
           )}
 
-          <div className="rounded-lg border bg-card p-4">
-            <h2 className="mb-4 font-semibold">Utilizzo slot</h2>
-            {isLoading ? <Skeleton className="h-60 w-full" /> : <UsageChart bookings={bookings} />}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-lg border bg-card p-4">
+              <h2 className="mb-4 font-semibold">Prenotazioni nel tempo</h2>
+              {isLoading ? <Skeleton className="h-56 w-full" /> : <UsageChart bookings={bookings} />}
+            </div>
+            <div className="rounded-lg border bg-card p-4">
+              <h2 className="mb-4 font-semibold">Top utenti</h2>
+              {isLoading ? <Skeleton className="h-56 w-full" /> : <UserChart bookings={bookings} />}
+            </div>
           </div>
 
           <div className="space-y-3">

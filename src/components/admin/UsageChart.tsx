@@ -1,14 +1,14 @@
 import { format, parseISO } from 'date-fns'
 import { it } from 'date-fns/locale'
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
+  Dot,
 } from 'recharts'
 import type { AdminBooking } from '@/pages/Admin'
 
@@ -16,27 +16,21 @@ interface UsageChartProps {
   bookings: AdminBooking[]
 }
 
-interface ChartEntry {
-  label: string
-  count: number
-}
-
 export function UsageChart({ bookings }: UsageChartProps) {
-  // Group bookings by date+slot
-  const slotMap: Record<string, ChartEntry> = {}
+  const dateMap: Record<string, number> = {}
 
   for (const b of bookings) {
     if (!b.slots) continue
-    const key = `${b.slots.date}_${b.slots.start_time}`
-    const date = parseISO(b.slots.date)
-    const label = `${format(date, 'EEE d', { locale: it })}\n${b.slots.start_time.slice(0, 5)}`
-    if (!slotMap[key]) {
-      slotMap[key] = { label, count: 0 }
-    }
-    slotMap[key].count++
+    const date = b.slots.date
+    dateMap[date] = (dateMap[date] ?? 0) + 1
   }
 
-  const data = Object.values(slotMap).slice(0, 20)
+  const data = Object.entries(dateMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, count]) => ({
+      label: format(parseISO(date), 'EEE d', { locale: it }),
+      count,
+    }))
 
   if (data.length === 0) {
     return (
@@ -47,8 +41,8 @@ export function UsageChart({ bookings }: UsageChartProps) {
   }
 
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 4 }}>
+    <ResponsiveContainer width="100%" height={220}>
+      <LineChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
         <XAxis
           dataKey="label"
@@ -66,14 +60,17 @@ export function UsageChart({ bookings }: UsageChartProps) {
             border: '1px solid var(--border)',
             background: 'var(--card)',
           }}
-          formatter={(value) => [`${value} prenotazioni`, 'Slot']}
+          formatter={(value) => [`${value} prenotazioni`, 'Giorno']}
         />
-        <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-          {data.map((_, i) => (
-            <Cell key={i} fill="hsl(var(--primary))" opacity={0.85} />
-          ))}
-        </Bar>
-      </BarChart>
+        <Line
+          type="monotone"
+          dataKey="count"
+          stroke="hsl(var(--primary))"
+          strokeWidth={2}
+          dot={<Dot r={3} fill="hsl(var(--primary))" />}
+          activeDot={{ r: 5 }}
+        />
+      </LineChart>
     </ResponsiveContainer>
   )
 }
