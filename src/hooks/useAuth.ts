@@ -41,9 +41,15 @@ export function useAuth() {
     return error
   }
 
+  const signInWithMagicLink = async (email: string) => {
+    const redirectTo = `${window.location.origin}/auth/callback`
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } })
+    return error
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
 
-  return { ...state, signIn, signInWithEmail, signOut }
+  return { ...state, signIn, signInWithEmail, signInWithMagicLink, signOut }
 }
