@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { format, subDays } from 'date-fns'
+import { subDays } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { ShieldCheck, Users, TrendingUp } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -26,15 +26,14 @@ export interface AdminBooking {
   } | null
 }
 
-function useAdminBookings(from: string, to: string) {
+function useAdminBookings(from: string) {
   return useQuery({
-    queryKey: ['adminBookings', from, to],
+    queryKey: ['adminBookings', from],
     queryFn: async (): Promise<AdminBooking[]> => {
       const { data, error } = await supabase
         .from('bookings')
         .select('*, slots!inner(date, start_time, end_time, spaces(name))')
-        .gte('slots.date', from)
-        .lte('slots.date', to)
+        .gte('created_at', from)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -71,9 +70,8 @@ type AdminTab = 'statistiche' | 'spazi' | 'accessi'
 export function Admin() {
   const [tab, setTab] = useState<AdminTab>('statistiche')
   const [rangeDays, setRangeDays] = useState(7)
-  const today = format(new Date(), 'yyyy-MM-dd')
-  const from = format(subDays(new Date(), rangeDays - 1), 'yyyy-MM-dd')
-  const { data: bookings = [], isLoading } = useAdminBookings(from, today)
+  const from = subDays(new Date(), rangeDays - 1).toISOString()
+  const { data: bookings = [], isLoading } = useAdminBookings(from)
 
   const uniqueUsers = new Set(bookings.map(b => b.user_id)).size
   const avgPerSlot =
