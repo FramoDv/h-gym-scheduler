@@ -28,14 +28,19 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     }
 
     const email = session.user.email ?? ''
-    checkWhitelist(email).then(allowed => {
-      if (allowed) {
-        setAccess('allowed')
-      } else {
+    checkWhitelist(email)
+      .then(allowed => {
+        if (allowed) {
+          setAccess('allowed')
+        } else {
+          setAccess('denied')
+          signOut()
+        }
+      })
+      .catch(() => {
         setAccess('denied')
         signOut()
-      }
-    })
+      })
   }, [session, loading, signOut])
 
   if (loading || (session && access === 'checking')) {

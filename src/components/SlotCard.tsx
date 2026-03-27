@@ -40,8 +40,8 @@ function BookerPile({ bookers }: { bookers: { name: string; avatarUrl?: string }
   return (
     <div className="mt-3 flex items-center gap-2.5 min-w-0">
       <AvatarGroup className="shrink-0">
-        {visible.map((b, i) => (
-          <div key={i} className="group/tip relative">
+        {visible.map((b) => (
+          <div key={b.name} className="group/tip relative">
             <Avatar size="sm">
               {b.avatarUrl && <AvatarImage src={b.avatarUrl} alt={b.name} referrerPolicy="no-referrer" />}
               <AvatarFallback>{getInitials(b.name)}</AvatarFallback>

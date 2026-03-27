@@ -24,12 +24,19 @@ function useSpaces() {
         .select('id, name, description, is_active, slots(bookings(id))')
         .order('created_at')
       if (error) throw error
-      return (data ?? []).map((s: any) => ({
+      type SpaceRow = {
+        id: string
+        name: string
+        description: string | null
+        is_active: boolean
+        slots: { bookings: { id: string }[] }[]
+      }
+      return (data ?? []).map((s: SpaceRow) => ({
         id: s.id,
         name: s.name,
         description: s.description,
         is_active: s.is_active,
-        booking_count: (s.slots ?? []).reduce((sum: number, slot: any) => sum + (slot.bookings?.length ?? 0), 0),
+        booking_count: (s.slots ?? []).reduce((sum, slot) => sum + (slot.bookings?.length ?? 0), 0),
       }))
     },
   })
@@ -172,13 +179,15 @@ export function Spaces() {
                     <button
                       onClick={() => startEdit(space)}
                       className="p-1 text-muted-foreground hover:text-foreground transition-colors"
-                      title="Modifica"
+                      aria-label={`Modifica spazio ${space.name}`}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => toggleSpace.mutate({ id: space.id, is_active: !space.is_active })}
                       className="px-2 py-0.5 text-xs rounded border transition-colors hover:bg-accent"
+                      aria-pressed={space.is_active}
+                      aria-label={space.is_active ? `Disattiva spazio ${space.name}` : `Attiva spazio ${space.name}`}
                     >
                       {space.is_active ? 'Disattiva' : 'Attiva'}
                     </button>
@@ -186,7 +195,7 @@ export function Spaces() {
                       onClick={() => deleteSpace.mutate(space.id)}
                       disabled={space.booking_count > 0 || deleteSpace.isPending}
                       className="p-1 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      title={space.booking_count > 0 ? 'Ha prenotazioni attive' : 'Elimina'}
+                      aria-label={space.booking_count > 0 ? `Impossibile eliminare ${space.name}: ha prenotazioni attive` : `Elimina spazio ${space.name}`}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

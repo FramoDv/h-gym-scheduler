@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { format, subDays } from 'date-fns'
-import { useQuery } from '@tanstack/react-query'
+import type React from 'react'
 import { ShieldCheck, Users, TrendingUp } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { BookingsTable } from '@/components/admin/BookingsTable'
 import { UsageChart } from '@/components/admin/UsageChart'
 import { UserChart } from '@/components/admin/UserChart'
@@ -11,6 +10,7 @@ import { AccessControl } from '@/components/admin/AccessControl'
 import { Spaces } from '@/components/admin/Spaces'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { useAdminBookings } from '@/hooks/useAdminBookings'
 
 export interface AdminBooking {
   id: string
@@ -27,23 +27,6 @@ export interface AdminBooking {
   } | null
 }
 
-function useAdminBookings(from: string) {
-  return useQuery({
-    queryKey: ['adminBookings', from],
-    queryFn: async (): Promise<AdminBooking[]> => {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*, slots!inner(date, start_time, end_time, spaces(name))')
-        .gte('created_at', from)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      return (data ?? []) as AdminBooking[]
-    },
-    staleTime: 30 * 1000,
-  })
-}
-
 const RANGES = [
   { label: 'Ultimi 7 giorni', days: 7 },
   { label: 'Ultimi 30 giorni', days: 30 },
@@ -51,7 +34,7 @@ const RANGES = [
 ]
 
 function StatCard({ icon: Icon, label, value }: {
-  icon: typeof Users
+  icon: React.ComponentType<{ className?: string }>
   label: string
   value: string | number
 }) {

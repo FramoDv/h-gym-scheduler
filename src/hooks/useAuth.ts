@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
@@ -47,9 +47,9 @@ export function useAuth() {
     return error
   }
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut()
-  }
+  }, [])
 
   return { ...state, signIn, signInWithEmail, signInWithMagicLink, signOut }
 }

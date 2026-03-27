@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Calendar, LayoutDashboard, ShieldCheck, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -23,11 +23,11 @@ export function Layout({ children }: LayoutProps) {
   const { data: isAdmin } = useIsAdmin(user?.email)
   const location = useLocation()
 
-  const navLinks = [
+  const navLinks = useMemo(() => [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/my-bookings', label: 'Le mie prenotazioni', icon: Calendar },
     ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: ShieldCheck }] : []),
-  ]
+  ], [isAdmin])
 
   const navigate = useNavigate()
   const initials = user?.user_metadata?.full_name

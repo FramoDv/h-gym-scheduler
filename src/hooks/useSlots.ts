@@ -66,8 +66,9 @@ export function useSlots(date: Date) {
         bookersMap[b.slot_id].push({ name: b.user_name ?? '', avatarUrl: b.user_avatar_url ?? undefined })
       }
 
-      return slots.map(s => {
-        const { spaces, ...rest } = s as typeof s & { spaces: { name: string } | null }
+      type SlotRow = typeof slots[number] & { spaces: { name: string } | null }
+      return (slots as SlotRow[]).map(s => {
+        const { spaces, ...rest } = s
         return {
           ...rest,
           booking_count: countMap[s.id] ?? 0,

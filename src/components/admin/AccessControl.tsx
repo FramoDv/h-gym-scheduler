@@ -81,14 +81,16 @@ function DomainSection() {
         Chiunque abbia un account Google con questi domini potrà accedere.
       </p>
       <div className="flex gap-2">
+        <label htmlFor="domain-input" className="sr-only">Dominio da aggiungere</label>
         <input
+          id="domain-input"
           className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
           placeholder="esempio.com"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
         />
-        <Button size="sm" onClick={handleAdd} disabled={add.isPending || !input.trim()}>
+        <Button size="sm" onClick={handleAdd} disabled={add.isPending || !input.trim()} aria-label="Aggiungi dominio">
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -104,6 +106,7 @@ function DomainSection() {
                   onClick={() => remove.mutate(d.id)}
                   disabled={remove.isPending}
                   className="text-muted-foreground hover:text-destructive"
+                  aria-label={`Elimina dominio ${d.domain}`}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -166,21 +169,25 @@ function EmailSection() {
         <strong>Supabase Dashboard → Auth → Users → Invite User</strong>.
       </p>
       <div className="flex gap-2">
+        <label htmlFor="email-input" className="sr-only">Email ospite da aggiungere</label>
         <input
+          id="email-input"
           className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
           placeholder="utente@dominio.com"
           value={emailInput}
           onChange={e => setEmailInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
         />
+        <label htmlFor="note-input" className="sr-only">Nota opzionale</label>
         <input
+          id="note-input"
           className="w-40 rounded-md border bg-background px-3 py-1.5 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
           placeholder="Nota (opz.)"
           value={noteInput}
           onChange={e => setNoteInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
         />
-        <Button size="sm" onClick={handleAdd} disabled={add.isPending || !emailInput.trim()}>
+        <Button size="sm" onClick={handleAdd} disabled={add.isPending || !emailInput.trim()} aria-label="Aggiungi email">
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -198,6 +205,7 @@ function EmailSection() {
                 onClick={() => remove.mutate(e.id)}
                 disabled={remove.isPending}
                 className="text-muted-foreground hover:text-destructive"
+                aria-label={`Elimina email ${e.email}`}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
