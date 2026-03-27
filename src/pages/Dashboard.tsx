@@ -65,7 +65,7 @@ function italianHolidays(year: number): Set<string> {
 
 function getNextWeekdays(count: number): Date[] {
   const days: Date[] = []
-  let current = startOfDay(addDays(new Date(), 1))
+  let current = startOfDay(new Date())
   const year = current.getFullYear()
   const holidays = new Set([...italianHolidays(year), ...italianHolidays(year + 1)])
   while (days.length < count) {
