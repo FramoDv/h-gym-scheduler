@@ -16,19 +16,20 @@ export interface SlotWithCount {
   space_name?: string
 }
 
-export function useSlots(date: Date) {
+export function useSlots(date: Date, spaceId?: string) {
   const dateStr = format(date, 'yyyy-MM-dd')
   const queryClient = useQueryClient()
 
-  // Supabase Realtime: invalidate cache when any booking changes for this date
+  // Supabase Realtime: invalidate cache when any booking changes for this date/space
   useEffect(() => {
+    const channelName = spaceId ? `bookings:${dateStr}:${spaceId}` : `bookings:${dateStr}`
     const channel = supabase
-      .channel(`bookings:${dateStr}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'bookings' },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['slots', dateStr] })
+          queryClient.invalidateQueries({ queryKey: ['slots', dateStr, spaceId] })
         }
       )
       .subscribe()
@@ -36,16 +37,22 @@ export function useSlots(date: Date) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [dateStr, queryClient])
+  }, [dateStr, spaceId, queryClient])
 
   return useQuery({
-    queryKey: ['slots', dateStr],
+    queryKey: ['slots', dateStr, spaceId],
     queryFn: async (): Promise<SlotWithCount[]> => {
-      const { data: slots, error } = await supabase
+      let query = supabase
         .from('slots')
         .select('id, date, start_time, end_time, max_capacity, min_capacity, is_cancelled, spaces(name)')
         .eq('date', dateStr)
         .order('start_time')
+
+      if (spaceId) {
+        query = query.eq('space_id', spaceId)
+      }
+
+      const { data: slots, error } = await query
 
       if (error) throw error
       if (!slots) return []
@@ -66,8 +73,7 @@ export function useSlots(date: Date) {
         bookersMap[b.slot_id].push({ name: b.user_name ?? '', avatarUrl: b.user_avatar_url ?? undefined })
       }
 
-      type SlotRow = typeof slots[number] & { spaces: { name: string } | null }
-      return (slots as SlotRow[]).map(s => {
+      return slots.map(s => {
         const { spaces, ...rest } = s
         return {
           ...rest,

@@ -7,6 +7,7 @@ import { Layout } from '@/components/Layout'
 import { Login } from '@/pages/Login'
 import { Dashboard } from '@/pages/Dashboard'
 import { MyBookings } from '@/pages/MyBookings'
+import { SpaceBookingView } from '@/components/dashboard/SpaceBookingView'
 import { Admin } from '@/pages/Admin'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -44,6 +45,16 @@ export default function App() {
               <AuthGuard>
                 <Layout>
                   <Dashboard />
+                </Layout>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/space/:spaceId"
+            element={
+              <AuthGuard>
+                <Layout>
+                  <SpaceBookingView />
                 </Layout>
               </AuthGuard>
             }

@@ -37,15 +37,20 @@ function italianHolidays(year: number): Set<string> {
   ])
 }
 
-export function getNextWeekdays(count: number): Date[] {
+export function getNextWeekdays(count: number, availableDays?: number[]): Date[] {
   const days: Date[] = []
   let current = startOfDay(new Date())
   const year = current.getFullYear()
   const holidays = new Set([...italianHolidays(year), ...italianHolidays(year + 1)])
   while (days.length < count) {
     const isHoliday = holidays.has(format(current, 'yyyy-MM-dd'))
-    if (current.getDay() !== 0 && !isHoliday) {
-      days.push(current)
+    if (!isHoliday) {
+      if (availableDays) {
+        const isoDay = current.getDay() === 0 ? 7 : current.getDay()
+        if (availableDays.includes(isoDay)) days.push(current)
+      } else if (current.getDay() !== 0) {
+        days.push(current)
+      }
     }
     current = addDays(current, 1)
   }
