@@ -30,6 +30,7 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
           <TableRow>
             <TableHead>Data</TableHead>
             <TableHead>Orario</TableHead>
+            <TableHead>Spazio</TableHead>
             <TableHead>Utente</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Prenotato il</TableHead>
@@ -50,12 +51,13 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
                     ? `${b.slots.start_time.slice(0, 5)} – ${b.slots.end_time.slice(0, 5)}`
                     : '—'}
                 </TableCell>
+                <TableCell>{b.slots?.spaces?.name ?? '—'}</TableCell>
                 <TableCell>{b.user_name}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {b.user_email}
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
-                  {format(parseISO(b.created_at), 'd MMM HH:mm', { locale: it })}
+                  {b.created_at ? format(parseISO(b.created_at), 'd MMM HH:mm', { locale: it }) : '—'}
                 </TableCell>
               </TableRow>
             )

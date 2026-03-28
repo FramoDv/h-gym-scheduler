@@ -8,7 +8,8 @@ export interface Booking {
   user_id: string
   user_email: string
   user_name: string
-  created_at: string
+  user_avatar_url: string | null
+  created_at: string | null
   slots: {
     date: string
     start_time: string

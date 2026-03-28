@@ -376,14 +376,12 @@ function SpaceCard({
 
           {/* Delete */}
           <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-            <AlertDialogTrigger asChild>
-              <button
-                type="button"
-                aria-label="Elimina spazio"
-                className="rounded p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+            <AlertDialogTrigger
+              type="button"
+              aria-label="Elimina spazio"
+              className="rounded p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>

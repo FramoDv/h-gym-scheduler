@@ -2,18 +2,24 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { AdminBooking } from '@/pages/Admin'
 
-export function useAdminBookings(from: string) {
+export function useAdminBookings(from: string, spaceId?: string) {
   return useQuery({
-    queryKey: ['adminBookings', from],
+    queryKey: ['adminBookings', from, spaceId],
     queryFn: async (): Promise<AdminBooking[]> => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('bookings')
-        .select('*, slots!inner(date, start_time, end_time, spaces(name))')
+        .select('*, slots!inner(date, start_time, end_time, space_id, spaces(name))')
         .gte('created_at', from)
         .order('created_at', { ascending: false })
 
+      if (spaceId) {
+        query = query.eq('slots.space_id', spaceId)
+      }
+
+      const { data, error } = await query
+
       if (error) throw error
-      return (data ?? []) as AdminBooking[]
+      return (data ?? []).filter(b => b.slots !== null) as AdminBooking[]
     },
     staleTime: 30 * 1000,
   })

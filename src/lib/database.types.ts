@@ -369,3 +369,9 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// Convenience aliases used across the codebase
+export type InsertDto<T extends keyof DefaultSchema["Tables"]> =
+  DefaultSchema["Tables"][T]["Insert"]
+export type UpdateDto<T extends keyof DefaultSchema["Tables"]> =
+  DefaultSchema["Tables"][T]["Update"]
