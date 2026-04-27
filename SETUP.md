@@ -61,23 +61,31 @@ Per aggiungere altri admin, esegui nel SQL Editor:
 INSERT INTO admins (email) VALUES ('tuaemail@humans.tech');
 ```
 
-## 7. Aggiorna gli slot (periodicamente)
+## 7. Schedula la rigenerazione automatica degli slot
 
-Per generare slot per i prossimi 14 giorni (idempotente, esegui quando vuoi):
+Esegui una volta nel SQL Editor il file `supabase/phase3_cron_regen_slots.sql`.
+Lo script:
+- abilita l'estensione `pg_cron`,
+- schedula `generate_slots(30)` ogni giorno alle **03:00 UTC**,
+- esegue subito un backfill di 30 giorni.
+
+Lo script è idempotente: rieseguibile in sicurezza (sostituisce la schedulazione precedente).
+
+Verifica registrazione del job:
 
 ```sql
-SELECT public.generate_slots(14);
+SELECT jobname, schedule, command, active
+FROM cron.job
+WHERE jobname = 'regen-slots-daily';
 ```
 
-Puoi automatizzarlo con **Supabase Cron** (pg_cron):
+Fallback manuale d'emergenza (se il cron non gira o serve estendere subito la finestra):
 
 ```sql
-SELECT cron.schedule(
-  'generate-weekly-slots',
-  '0 8 * * 1',  -- ogni lunedì alle 8:00
-  'SELECT public.generate_slots(14);'
-);
+SELECT public.generate_slots(30);
 ```
+
+In alternativa, dal pannello admin il bottone **"Rigenera slot"** chiama la stessa funzione.
 
 ## 8. Deploy su Vercel
 
